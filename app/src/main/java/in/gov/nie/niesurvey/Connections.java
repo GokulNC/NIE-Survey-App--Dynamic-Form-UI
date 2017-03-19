@@ -24,7 +24,7 @@ class Connections {
 
     private static final String TAG = "OkHttp";
     static String loginURL = "http://110.227.247.221/NIE/login.jsp";
-    static String formsURL = "http://110.227.247.221/NIE/form.jsp";
+    static String formsURL = "http://110.227.247.221/NIE/forms.jsp";
     static String testSource = "http://github.com/GokulNC/Programming_Practice/blob/master/To%20Solve.txt";
 
     /*//For Volley:
@@ -65,7 +65,8 @@ class Connections {
     }
 
     static String doPostRequest(String url, HashMap<String, String> map) throws IOException {
-        //RequestBody body = RequestBody.create(JSON, json);
+
+        //For OkHttp 2.0:
         /*RequestBody body = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("username", "admin")
@@ -73,13 +74,10 @@ class Connections {
                 .build();*/
 
         FormBody.Builder bodyBuilder = new FormBody.Builder();
-
         for(String key: map.keySet()) {
             bodyBuilder.add(key, map.get(key));
         }
-
         RequestBody body = bodyBuilder.build();
-
 
         okhttp3.Request request = new okhttp3.Request.Builder()
                 .url(url)

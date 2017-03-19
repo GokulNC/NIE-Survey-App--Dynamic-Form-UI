@@ -289,6 +289,10 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
                     return false;
                 }
 
+            } catch (java.net.SocketTimeoutException e) {
+                e.printStackTrace();
+                //TODO: Display alert unable to connect
+                Log.d(TAG, "CONNECTION TIMEOUT");
             } catch (Exception e) {
                 e.printStackTrace();
             }
