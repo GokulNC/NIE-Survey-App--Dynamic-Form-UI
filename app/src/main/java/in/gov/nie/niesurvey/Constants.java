@@ -25,5 +25,9 @@ public class Constants {
     public static final String TEXT_INPUT_TYPE_KEY_NAME = "text";
     public static final String RADIO_INPUT_TYPE_KEY_NAME = "radio";
 
-    static ArrayList<String> formsAvailable;
+
+    //For SharedPreferences:
+    public static final String HOST_IP_KEY_NAME = "host_ip";
+
+    static ArrayList<String> formsAvailable = new ArrayList<>();
 }

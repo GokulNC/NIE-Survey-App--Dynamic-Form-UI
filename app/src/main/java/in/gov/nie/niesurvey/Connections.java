@@ -1,16 +1,11 @@
 package in.gov.nie.niesurvey;
 
-import android.content.Context;
 import android.util.Log;
-
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
 
 import java.io.IOException;
 import java.util.HashMap;
 
 import okhttp3.FormBody;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 
@@ -23,8 +18,10 @@ import static in.gov.nie.niesurvey.Constants.*;
 class Connections {
 
     private static final String TAG = "OkHttp";
-    static String loginURL = "http://110.227.247.221/NIE/login.jsp";
-    static String formsURL = "http://110.227.247.221/NIE/forms.jsp";
+    static String hostIP = "http://110.227.247.221";
+    static String loginURL = "/NIE/login.jsp";
+    static String formsURL = "/NIE/forms.jsp";
+    static String submitFormURL = "/NIE/submit_form.jsp";
     static String testSource = "http://github.com/GokulNC/Programming_Practice/blob/master/To%20Solve.txt";
 
     /*//For Volley:

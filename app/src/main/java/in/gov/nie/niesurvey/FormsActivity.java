@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import static in.gov.nie.niesurvey.Connections.formsURL;
+import static in.gov.nie.niesurvey.Connections.hostIP;
 import static in.gov.nie.niesurvey.Constants.FORM_KEY_NAME;
 import static in.gov.nie.niesurvey.Constants.formsAvailable;
 
@@ -34,14 +35,14 @@ public class FormsActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-       /* FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Select any form", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });*/
+        });
 
         LinearLayout ll = (LinearLayout) findViewById(R.id.content_forms);
         for(final String formName: formsAvailable ) {
@@ -68,7 +69,7 @@ public class FormsActivity extends AppCompatActivity {
             boolean success = true;
             String response = "";
             try {
-                response = Connections.doPostRequest(formsURL, map).trim();
+                response = Connections.doPostRequest(hostIP+formsURL, map).trim();
                 Log.d(TAG, "Form Fields of "+formName[0]+":\n"+response);
                 JSONObject res = new JSONObject(response); //This line is to ensure we have received a proper JSON, else exception will be thrown
 
@@ -89,33 +90,6 @@ public class FormsActivity extends AppCompatActivity {
 
             return null;
         }
-    }
-
-    void requestForm(String formName) {
-        HashMap<String, String> map = new HashMap<>();
-        map.put(FORM_KEY_NAME, formName);
-        boolean success = true;
-        String response = "";
-        try {
-            response = Connections.doPostRequest(formsURL, map).trim();
-            Log.d(TAG, "Form Fields of "+formName+":\n"+response);
-            JSONObject res = new JSONObject(response); //This line is to ensure we have received a proper JSON, else exception will be thrown
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            success = false;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        if(!success || response.isEmpty()) {
-            Toast.makeText(getApplicationContext(), "Error Retrieving Form", Toast.LENGTH_SHORT).show();
-        } else {
-            Intent intent = new Intent(FormsActivity.this, FormRenderActivity.class);
-            intent.putExtra(FORM_KEY_NAME, response);
-            startActivity(intent);
-        }
-
     }
 
 }

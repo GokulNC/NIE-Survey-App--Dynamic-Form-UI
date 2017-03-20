@@ -15,4 +15,9 @@
     </string>
     <string name="title_activity_forms">FormsActivity</string>
     <string name="title_activity_form_render">FormRenderActivity</string>
+    <string name="alert_confirm_send">Submit Form?</string>
+    <string name="alert_confirm_submit">Do you want to submit the form?</string>
+    <string name="action_submit_form">Submit form</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="prompt_username">Username</string>
 </resources>

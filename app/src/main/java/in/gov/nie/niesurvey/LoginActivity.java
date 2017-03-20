@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -45,22 +46,15 @@ import java.util.List;
 import java.util.Map;
 
 import static android.Manifest.permission.READ_CONTACTS;
+import static in.gov.nie.niesurvey.Connections.hostIP;
 import static in.gov.nie.niesurvey.Connections.loginURL;
 import static in.gov.nie.niesurvey.Constants.*;
 
 /**
- * A login screen that offers login via email/password.
+ * A login screen that offers login via username/password.
  */
-public class LoginActivity extends AppCompatActivity /*implements LoaderCallbacks<Cursor>*/ {
+public class LoginActivity extends AppCompatActivity {
 
-    /**
-     * Id to identity READ_CONTACTS permission request.
-     */
-    /*private static final int REQUEST_READ_CONTACTS = 0;*/
-
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
     private static final String TAG = "NIE_Survey";
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -72,13 +66,16 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        sharedPreferences = getPreferences(MODE_PRIVATE);
+
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        mEmailView = (AutoCompleteTextView) findViewById(R.id.username);
         /*populateAutoComplete();*/
 
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -106,50 +103,9 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
         mProgressView = findViewById(R.id.login_progress);
 
 
+        if(sharedPreferences.getString(HOST_IP_KEY_NAME, null) != null) hostIP = sharedPreferences.getString(HOST_IP_KEY_NAME, null);
+        ((EditText) findViewById(R.id.host_ip)).setText(hostIP.replace("http://", ""));
     }
-
-    /*private void populateAutoComplete() {
-        if (!mayRequestContacts()) {
-            return;
-        }
-
-        getLoaderManager().initLoader(0, null, this);
-    }
-
-    private boolean mayRequestContacts() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new View.OnClickListener() {
-                        @Override
-                        @TargetApi(Build.VERSION_CODES.M)
-                        public void onClick(View v) {
-                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-                        }
-                    });
-        } else {
-            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-        }
-        return false;
-    }*/
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-    /*@Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_READ_CONTACTS) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete();
-            }
-        }
-    }*/
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -265,15 +221,14 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
 
             HashMap<String, String> map = new HashMap<>();
             map.put("username", mEmail);
             map.put("password", mPassword);
             try {
-                //String request = (new JSONObject(map)).toString();
+
                 Log.d(TAG, "Request: "+map.toString());
-                String json = Connections.doPostRequest(loginURL, map).trim();
+                String json = Connections.doPostRequest(hostIP+loginURL, map).trim();
                 Log.d(TAG, "Response: "+json);
 
 
@@ -317,6 +272,11 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
             mAuthTask = null;
             showProgress(false);
         }
+    }
+
+    public void changeHostIP(View v) {
+        hostIP = "http://"+((EditText) findViewById(R.id.host_ip)).getText().toString();
+        sharedPreferences.edit().putString(HOST_IP_KEY_NAME, hostIP).apply();
     }
 }
 
