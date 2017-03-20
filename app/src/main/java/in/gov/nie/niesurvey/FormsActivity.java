@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -21,6 +22,8 @@ import java.util.HashMap;
 
 import static in.gov.nie.niesurvey.Connections.formsURL;
 import static in.gov.nie.niesurvey.Connections.hostIP;
+import static in.gov.nie.niesurvey.Constants.AADHAAR_KEY_NAME;
+import static in.gov.nie.niesurvey.Constants.FORM_FILEDS_KEY_NAME;
 import static in.gov.nie.niesurvey.Constants.FORM_KEY_NAME;
 import static in.gov.nie.niesurvey.Constants.formsAvailable;
 
@@ -52,7 +55,8 @@ public class FormsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Toast.makeText(getApplicationContext(), "Requesting "+formName, Toast.LENGTH_SHORT).show();
-                    new RequestForm().execute(formName);
+                    final String aadhaar = ((EditText) findViewById(R.id.aadhaar)).getText().toString();
+                    new RequestForm().execute(formName, aadhaar);
                 }
             });
             ll.addView(btn);
@@ -66,6 +70,7 @@ public class FormsActivity extends AppCompatActivity {
 
             HashMap<String, String> map = new HashMap<>();
             map.put(FORM_KEY_NAME, formName[0]);
+            map.put(AADHAAR_KEY_NAME, formName[1]);
             boolean success = true;
             String response = "";
             try {
@@ -84,7 +89,8 @@ public class FormsActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Error Retrieving Form", Toast.LENGTH_SHORT).show();
             } else {
                 Intent intent = new Intent(FormsActivity.this, FormRenderActivity.class);
-                intent.putExtra(FORM_KEY_NAME, response);
+                intent.putExtra(FORM_FILEDS_KEY_NAME, response);
+                intent.putExtra(FORM_KEY_NAME, formName[0]);
                 startActivity(intent);
             }
 

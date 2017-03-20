@@ -18,10 +18,10 @@ import static in.gov.nie.niesurvey.Constants.*;
 class Connections {
 
     private static final String TAG = "OkHttp";
-    static String hostIP = "http://110.227.247.221";
+    static String hostIP = "http://122.174.163.129";
     static String loginURL = "/NIE/login.jsp";
     static String formsURL = "/NIE/forms.jsp";
-    static String submitFormURL = "/NIE/submit_form.jsp";
+    static String submitFormURL = "/NIE/formhandler.jsp";
     static String testSource = "http://github.com/GokulNC/Programming_Practice/blob/master/To%20Solve.txt";
 
     /*//For Volley:
@@ -31,7 +31,6 @@ class Connections {
         //Important Note: Call this first before GET or POST
         requestQueue = Volley.newRequestQueue(context);
     }*/
-
 
     static OkHttpClient client = new OkHttpClient().newBuilder()
             .followRedirects(true)

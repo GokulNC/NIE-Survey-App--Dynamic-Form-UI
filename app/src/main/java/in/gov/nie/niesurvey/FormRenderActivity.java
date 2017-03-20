@@ -3,7 +3,9 @@ package in.gov.nie.niesurvey;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -35,6 +37,7 @@ public class FormRenderActivity extends AppCompatActivity {
     //HashMap<Integer, String> idMap = new HashMap<>();
     SparseArray<String> textIdMap = new SparseArray<>();
     SparseArray<String> radioIdMap = new SparseArray<>();
+    String formName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +57,8 @@ public class FormRenderActivity extends AppCompatActivity {
             }
         });
 
-        renderForm(getIntent().getStringExtra(FORM_KEY_NAME));
+        renderForm(getIntent().getStringExtra(FORM_FILEDS_KEY_NAME));
+        formName = getIntent().getStringExtra(FORM_KEY_NAME);
 
     }
 
@@ -82,7 +86,13 @@ public class FormRenderActivity extends AppCompatActivity {
 
         if(inputType.equals(TEXT_INPUT_TYPE_KEY_NAME)) {
             EditText et = new EditText(this);
+            et.setId(View.generateViewId());
             et.setHint(json.getString(FIELD_HUMAN_NAME_KEY_NAME));
+            Log.d(TAG, json.getString(FIELD_HUMAN_NAME_KEY_NAME)+": "+et.getId());
+
+            if(json.has(VALUE_KEY_NAME)) {
+                et.setText(json.getString(VALUE_KEY_NAME));
+            }
             field = et;
             textIdMap.put(et.getId(), json.getString(FIELD_ID_KEY_NAME));
 
@@ -90,19 +100,31 @@ public class FormRenderActivity extends AppCompatActivity {
 
             //LinearLayout container = new LinearLayout(this);
             RadioGroup radioGroup = new RadioGroup(this);
+            radioGroup.setId(View.generateViewId());
             TextView caption = new TextView(this);
             caption.setText(json.getString(FIELD_HUMAN_NAME_KEY_NAME));
             radioGroup.addView(caption);
+            String value = "";
+            boolean hasValue = false;
+            if(json.has(VALUE_KEY_NAME)) {
+                value = json.getString(VALUE_KEY_NAME);
+                hasValue = true;
+            }
 
-            JSONArray options = json.getJSONArray(FIELD_OPTIONS_KEY_NAME);
+            if(json.has(FIELD_OPTIONS_KEY_NAME)) {
+                JSONArray options = json.getJSONArray(FIELD_OPTIONS_KEY_NAME);
 
-            for(int i=0; i<options.length(); ++i) {
-                RadioButton rb = new RadioButton(this);
-                rb.setText(options.getString(i));
-                radioGroup.addView(rb);
+                for (int i = 0; i < options.length(); ++i) {
+                    RadioButton rb = new RadioButton(this);
+                    rb.setId(View.generateViewId());
+                    rb.setText(options.getString(i));
+                    if(hasValue && options.getString(i).equals(value)) rb.setChecked(true);
+                    radioGroup.addView(rb);
+                }
             }
 
             field = radioGroup;
+            Log.d(TAG, json.getString(FIELD_HUMAN_NAME_KEY_NAME)+": "+radioGroup.getId());
             radioIdMap.put(radioGroup.getId(), json.getString(FIELD_ID_KEY_NAME));
 
         }
@@ -112,6 +134,9 @@ public class FormRenderActivity extends AppCompatActivity {
 
     void submitForm() {
         final HashMap<String, String> map = new HashMap<>();
+
+        map.put(FORM_KEY_NAME, formName);
+
         for(int i=0; i<textIdMap.size(); ++i) {
             int key = textIdMap.keyAt(i);
             String value = ((EditText) findViewById(key)).getText().toString();
@@ -161,17 +186,19 @@ public class FormRenderActivity extends AppCompatActivity {
             String response = "";
             try {
                 response = Connections.doPostRequest(url[0], data).trim();
-                JSONObject res = new JSONObject(response); //This line is to ensure we have received a proper JSON, else exception will be thrown
+                //JSONObject res = new JSONObject(response); //This line is to ensure we have received a proper JSON, else exception will be thrown
+
+                Log.d(TAG, "Submit Response: "+response);
 
             } catch (IOException e) {
                 e.printStackTrace();
                 success = false;
-            } catch (JSONException e) {
+            } /*catch (JSONException e) {
                 e.printStackTrace();
-            }
+            }*/
 
             if(!success || response.isEmpty()) {
-                Toast.makeText(getApplicationContext(), "Error Submitting Form", Toast.LENGTH_SHORT).show();
+                //TODO: Toast.makeText(getApplicationContext(), "Error Submitting Form", Toast.LENGTH_SHORT).show();
             } else {
                 //TODO: Find what the error is from response JSON and report it
             }

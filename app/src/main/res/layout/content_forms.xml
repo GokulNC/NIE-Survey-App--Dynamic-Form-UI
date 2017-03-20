@@ -14,4 +14,10 @@
     tools:context="in.gov.nie.niesurvey.FormsActivity"
     tools:showIn="@layout/activity_forms">
 
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/aadhaar"
+        android:hint="@string/prompt_aadhaar"/>
+
 </LinearLayout>

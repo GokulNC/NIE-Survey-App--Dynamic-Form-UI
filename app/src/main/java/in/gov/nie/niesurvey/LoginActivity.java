@@ -277,6 +277,7 @@ public class LoginActivity extends AppCompatActivity {
     public void changeHostIP(View v) {
         hostIP = "http://"+((EditText) findViewById(R.id.host_ip)).getText().toString();
         sharedPreferences.edit().putString(HOST_IP_KEY_NAME, hostIP).apply();
+        Toast.makeText(this, "Host IP set as: "+hostIP, Toast.LENGTH_SHORT).show();
     }
 }
 
